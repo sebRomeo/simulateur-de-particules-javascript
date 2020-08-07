@@ -1,6 +1,21 @@
 body, html {
     background: #111;
-background: radial-gradient(circle, rgba(57,19,2,1) 0%, rgba(0,0,0,1) 100%) no-repeat bottom;
-height:100vh;
-margin:0;padding:0
+    background: radial-gradient(circle, rgba(57, 19, 2, 1) 0%, rgba(0, 0, 0, 1) 100%) no-repeat bottom;
+    height: 100vh;
+    margin: 0;
+    padding: 0
 }
+
+#stats, #controls {
+    position: fixed;
+    bottom: 0;
+}
+
+#controls div {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.64);
+    color: #ccc;
+    padding: 5px 15px;
+}
+
+#controls div {display:inline-block;}

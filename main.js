@@ -2,7 +2,7 @@
 
 let w = window.innerWidth
 let h = window.innerHeight
-const gravitationalConstant = 6.67408 //* Math.pow(10, -11);
+const gravitationalConstant = 6.67408 * Math.pow(10, -2);// Math.pow(10, -11);
 
 window.addEventListener('resize', () => (w = window.innerWidth) && (h = window.innerHeight))
 
@@ -19,52 +19,60 @@ const config = {
     atmos: { name: `Atmosphere`, value: 1, randomization: 0.2 },
     colors: { name: `Couleurs`, value: 0.5, randomization: 0.2 },
     collidableBorders: true,
-
 };
 // determine la distance a partir de laquelle le calcul de colision est ignoré
 config.minDistanceForCollisionDetection = config.particleSize.value * 10;
 
-function init() {
-    // create engine
-    const engine = Engine.create()
 
-    // create renderer
-    var render = Render.create({
-        canvas: document.getElementById('scene'),
-        engine,
-        options: {
-            width: w,
-            height: h,
-            wireframes: true,
-            wireframeBackground: 'transparent',
-            background: 'transparent',
-        }
-    });
-    Render.run(render);
-    var runner = Runner.create({
-        // fps: 10,
-        // correction: 1,
-        // deltaSampleSize: 60,
-        // counterTimestamp: 0,
-        // frameCounter: 0,
-        // deltaHistory: [],
-        // timePrev: null,
-        // timeScalePrev: 1,
-        // frameRequestId: null,
-        isFixed: true,
-        // enabled: true
-    });
-    Runner.run(runner, engine);
-    return { render, engine };
+
+
+
+
+// create engine
+const engine = Engine.create()
+
+// create renderer
+var render = Render.create({
+    canvas: document.getElementById('scene'),
+    engine,
+    options: {
+        width: w,
+        height: h,
+        wireframes: true,
+        wireframeBackground: 'transparent',
+        background: 'transparent',
+    }
+});
+Render.run(render);
+var runner = Runner.create({
+    // fps: 10,
+    // correction: 1,
+    // deltaSampleSize: 60,
+    // counterTimestamp: 0,
+    // frameCounter: 0,
+    // deltaHistory: [],
+    // timePrev: null,
+    // timeScalePrev: 1,
+    // frameRequestId: null,
+    // isFixed: true,
+    // enabled: true
+});
+
+const world = engine.world;
+world.gravity.y = 0;
+
+const simulation = {
+    paused: true,
+    play: () => Runner.run(runner, engine),
+    pause: () => Runner.stop(runner),
+    stepForward: () => Runner.tick(runner, engine),
 }
 
-function run() {
+$('#controls-play').click(() => simulation.play());
+$('#controls-pause').click(() => simulation.pause());
+$('#controls-step-forward').click(() => simulation.stepForward());
 
-    const { render, engine } = init(w, h);
-    const world = engine.world;
-    world.gravity.y = 0;
-
-    const disableGravity = config.gravity.value === 0;
+function init() {
 
     const newColor = () => {
         const rdnClr = () => 255 - (random(0, 255) * config.colors.value);
@@ -114,7 +122,7 @@ function run() {
     // fit the render viewport to the scene
     Render.lookAt(render, { min: { x: 0, y: 0 }, max: { x: w, y: h } });
 
-    Events.on(engine, 'beforeUpdate', loop);
+    Events.on(engine, 'beforeUpdate', loop(config));
 };
 
 
@@ -129,4 +137,4 @@ function randomize(value, min, max, randomizationStrength) {
 }
 
 
-run();
+init();
