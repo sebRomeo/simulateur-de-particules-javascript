@@ -1,0 +1,31 @@
+{
+    //----------------------------------------
+    //
+    //----------------------------------------
+    "reqbridge": {
+        "prefix": [
+            "bridge:require",
+            "reqbridge"
+        ],
+        "body": [
+            "const bridgeService = require('$1../00_core/services/bridge-service');"
+        ],
+        "description": "require bridge service"
+    },
+    "bridge:emit": {
+        "prefix": "bridge:emit",
+        "body": [
+            "${1:const meta = }await bridgeService.emit('${2:moduleName}.${3:eventName}', ctx$4);"
+        ],
+        "description": "emit an event to other modules"
+    },
+    "bridge:on": {
+        "prefix": "bridge:on",
+        "body": [
+            "bridgeService.on('${2:moduleName}.${3:eventName}', async (ctx, $4 meta) => {",
+            "    $5",
+            "});"
+        ],
+        "description": "listen to an event from another module"
+    },
+}

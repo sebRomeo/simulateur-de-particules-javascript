@@ -1,0 +1,90 @@
+{
+    //----------------------------------------
+    // API
+    //----------------------------------------
+    "middleware": {
+        "prefix": [
+            "controller:mw",
+            "mwfn",
+            "middlewareFn"
+        ],
+        "body": [
+            "${1:name}() {",
+            "    return this.fn(async (req, ctx) => {",
+            "        $2",
+            "    });",
+            "}"
+        ]
+    },
+    "processOutput": {
+        "prefix": [
+            "controller:processOutput",
+            "processOutputMwfn",
+        ],
+        "body": [
+            "async ${1:name}(ctx, ${2:data}) {",
+            "    $3",
+            "    return $2;",
+            "}"
+        ]
+    },
+    "newRoute": {
+        "prefix": [
+            "api:route",
+        ],
+        "body": [
+            "'/$1': [",
+            "    ctl.checkAccess($2),",
+            "    ctl.$3($4),",
+            "],"
+        ]
+    },
+    "api:socketInit": {
+        "prefix": [
+            "api:socketInit",
+        ],
+        "body": [
+            "/** IO EMITTING EVENTS",
+            " *  @event ${2:event/:id/emitedByTheServer} ${3:description}",
+            " */",
+            "${4:Please type socketRoute OR socketNamespace for autocomplete}",
+        ]
+    },
+    "api:socketSimpleRoute": {
+        "prefix": [
+            "api:socketSimpleRoute",
+        ],
+        "body": [
+            "'${1:myRoute}': [",
+            "    ctl.checkAccess(),",
+            "    $2,",
+            "],",
+        ]
+    },
+    "api:socketNamespace": {
+        "prefix": [
+            "api:socketNamespace",
+        ],
+        "body": [
+            "'${1:user/:id}': {",
+            "    onSubscribe: [",
+            "        ctl.checkAccess(),$5",
+            "    ],",
+            "    '/${2:my-route}': [",
+            "        $3",
+            "    ],",
+            "}"
+        ]
+    },
+    "api:staticFile": {
+        "prefix": [
+            "api:staticFile",
+        ],
+        "body": [
+            "'/${1::id}': [",
+            "    ctl.checkFileAccess(),",
+            "    $2",
+            "],",
+        ]
+    }
+}

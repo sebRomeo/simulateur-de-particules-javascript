@@ -1,0 +1,35 @@
+{
+    //----------------------------------------
+    // ERRORS
+    //----------------------------------------
+    "appError": {
+        "scope": "javascript,typescript",
+        "prefix": [
+            "err",
+            "appErr",
+            "err:applicationError"
+        ],
+        "body": [
+            "error.$1.throw($2)",
+        ],
+    },
+    "404": {
+        "prefix": [
+            "e404",
+            "err:404"
+        ],
+        "body": [
+            "if(!isset($1)) error[404].throw({ressource: '${2:$1}'})"
+        ]
+    },
+    "err:newError": {
+        "prefix": "err:newError",
+        "body": [
+            "$1: {",
+            "    code: ${2|422,403,404,409,401,500|},",
+            "    fr: `$3`,",
+            "    en: `$4`,",
+            "},"
+        ]
+    },
+}

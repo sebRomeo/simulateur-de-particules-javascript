@@ -1,0 +1,17 @@
+{
+    //----------------------------------------
+    // SEED
+    //----------------------------------------
+    "seed:new": {
+        "scope": "javascript",
+        "prefix": "seed:new",
+        "body": [
+            "{",
+            "    module: '$1', // name of the module to seed",
+            "    priority: 50, // 0-100 where 0 means lower priority",
+            "    dao: myNewModuleDAO, // required only for actual module",
+            "    seed(/* previousSeededRessources */) { },",
+            "}",
+        ],
+    },
+}

@@ -1,0 +1,24 @@
+{
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/cache/**": true,
+        "**/public/**": true,
+        "**/tmp/**": true,
+        "**/doc/doc-src": true,
+        "**/doc/src": true,
+    },
+    "files.exclude": {
+        "**/doc/doc-src": true,
+        "**/doc/src": true,
+        "**/node_modules": true
+    },
+    "search.exclude": {
+        "**/doc/doc-src": true,
+        "**/doc/src": true
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.fixAll.eslint": true
+    },
+    "window.titleBarStyle": "custom"
+}

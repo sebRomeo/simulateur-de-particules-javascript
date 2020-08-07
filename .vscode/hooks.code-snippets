@@ -1,0 +1,106 @@
+{
+    //----------------------------------------
+    // hookECTIONS
+    //----------------------------------------
+    "hook.mask": {
+        "prefix": [
+            "hook:mask",
+        ],
+        "body": [
+            "{",
+            "${1:    ${2|for,notFor|}: '${3:permNameOrType}',}",
+            "${4:    ${5|on,notOn|}: ${6|'ALL','read','write','getAll','getOne','create','update'|},}",
+            "    ${7|mask,select|}: ${8|['unauthorizedFieldName'],async (ctx\\, mask) => ${9:fn}|},",
+            "},",
+        ]
+    },
+    "hook.onWrite": {
+        "prefix": [
+            "hook:onWrite",
+        ],
+        "body": [
+            "{",
+            "${1:    ${2|for,notFor|}: '${3:permNameOrType}',}",
+            "${4:    ${5|on,notOn|}: ${6|'ALL','create','update'|},}",
+            "    onWrite: async (ctx, fields, filterForUpdate) => $7,",
+            "},",
+        ]
+    },
+    "hook.populate": {
+        "prefix": [
+            "hook:populate",
+        ],
+        "body": [
+            "{",
+            "${1:    ${2|for,notFor|}: '${3:permNameOrType}',}",
+            "${4:    ${5|on,notOn|}: ${6|'ALL','read','write','getAll','getOne','create','update'|},}",
+            "    populate: [{path: '$7', select: '$8 $9'}$10]",
+            "},",
+        ]
+    },
+    "hook.filter": {
+        "prefix": [
+            "hook:filter",
+        ],
+        "body": [
+            "{",
+            "${1:    ${2|for,notFor|}: '${3:permNameOrType}',}",
+            "${4:    ${5|on,notOn|}: ${6|'ALL','read','write','getAll','getOne','create','update'|},}",
+            "    filter: async (ctx, filter) => ${7:modify the filter object or return it},",
+            "},",
+        ]
+    },
+    "hook.projections": {
+        "prefix": [
+            "hook:projections",
+        ],
+        "body": [
+            "{",
+            "${1:    name: '$2',}",
+            "${3:    ${4|for,notFor|}: '${5:permNameOrType}',}",
+            "${6:    ${7|on,notOn|}: ${8|'ALL','read','write','getAll','getOne','create','update'|},}",
+            "    projections:  [${9:'field1', '-notToBePresent', 'populatedField[ALL]', 'populatedField2[subItem1,nestedPopulation[ALL]]'}],",
+            "},",
+        ]
+    },
+    "hook.hasAccess": {
+        "prefix": [
+            "hook:hasAccess",
+        ],
+        "body": [
+            "{",
+            "${1:    ${2|for,notFor|}: '${3:permNameOrType}',}",
+            "${4:    ${5|on,notOn|}: ${6|'ALL','read','write','getAll','getOne','create','update'|},}",
+            "    hasAccess: async ctx => ${7:return a boolean},",
+            "},",
+        ]
+    },
+    "hook.processOutput": {
+        "prefix": [
+            "hook:processOutput",
+        ],
+        "body": [
+            "{",
+            "${1:    ${2|for,notFor|}: '${3:permNameOrType}',}",
+            "${4:    ${5|on,notOn|}: ${6|'ALL','read','write','getAll','getOne','create','update'|},}",
+            "    processOutput: async (ctx, result, config) => $7,",
+            "},",
+        ]
+    },
+    "hook.onDelete": {
+        "prefix": [
+            "hook:onDelete",
+        ],
+        "body": [
+            "// * Delete or pull other documents that reference the toBeDeleted item",
+            "// * { modelName: 'field1', modelName2: async (ctx,itemToBeDeleted) => return filterForDeletion, }",
+            "referencedDocumentsToDelete: {},",
+            "// * Delete fields referenced in the toBeDeleted item (array field will delete all subdocs)",
+            "// * { modelfieldAddressName: 'modelName', } // this format allow multiple ressources to be deleted",
+            "// /!\\ same as above but INVERTED !",
+            "selfFieldsToDelete: {},",
+            "deleteItemConfig: {}, // config for the itemToBeDeleted (populate...)",
+            "onDelete(/*ctx, itemToBeDeleted*/) { },",
+        ]
+    },
+}

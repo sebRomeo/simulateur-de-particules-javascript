@@ -1,0 +1,30 @@
+{
+    //----------------------------------------
+    // MODELS
+    //----------------------------------------
+    "model.objectId": {
+        "prefix": [
+            "model:objectId",
+            "model:ref",
+        ],
+        "body": [
+            "{ ref: '$1' }$2",
+        ]
+    },
+    "model.in": {
+        "prefix": [
+            "model:in",
+        ],
+        "body": [
+            "{ type: String, in: ['$2', '$3', $4] }$5",
+        ]
+    },
+    "model:submodel": {
+        "prefix": [
+            "model:submodel",
+        ],
+        "body": [
+            "models.submodel.$1",
+        ]
+    },
+}
