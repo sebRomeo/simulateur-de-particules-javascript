@@ -30,14 +30,13 @@ function init() {
     }
 
     const averageParticleSize = minMax(config.particleSize.value, 0.1, 1) * 10;
-
     const whRatio = w / h;
     const horizontalMargin = 150;
-    const verticalMargin = horizontalMargin / whRatio;
+    const verticalMargin = 150;
     const nbColumns = Math.floor(config.particleNb.value * 50);
     const nbRows = Math.max(Math.floor(nbColumns / whRatio), 1);
-    const horizontalGap = (w - horizontalMargin - (nbColumns * averageParticleSize)) / ((nbColumns - 1) || 1)
-    const verticalGap = (h - verticalMargin - (nbRows * averageParticleSize)) / ((nbRows - 1) || 1)
+    const horizontalGap = Math.max((w - horizontalMargin - (nbColumns * averageParticleSize)) / ((nbColumns - 1) || 1), 1)
+    const verticalGap = Math.max((h - verticalMargin - (nbRows * averageParticleSize)) / ((nbRows - 1) || 1), 1)
 
     for (let x = horizontalMargin; x < w - horizontalMargin; x += horizontalGap) {
         for (let y = verticalMargin; y < h - verticalMargin; y += verticalGap) {
@@ -49,20 +48,21 @@ function init() {
                     x: randomize(0.5, x - horizontalGap, x + horizontalGap, config.particlePosition.randomization),
                     y: randomize(0.5, y - verticalGap, y + verticalGap, config.particlePosition.randomization),
                 },
-                force: {
-                    x: 0,
-                    y: 0,
-                },
+                force: { x: 0, y: 0, },
+                gravity: { x: 0, y: 0, },
+                finalForce: { x: 0, y: 0 },
+                speed: 0,
                 mass: Math.PI * (radius ** 2) * config.particleDensity.value,
                 color: newColor(),
                 size,
+                moved: false,
                 radius,
                 collisionChecked: false,
             });
         }
     }
 
-    stats.registerEvents();
+    stats.registerEvents('gravity', 'collision', 'draw');
 };
 
 

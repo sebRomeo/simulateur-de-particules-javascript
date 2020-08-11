@@ -11,7 +11,7 @@ const Vector = {
         return { x: v.x / mag, y: v.y / mag };
     },
     magnitude(vector) {
-        return Math.sqrt((vector.x * vector.x) + (vector.y * vector.y));
+        return Math.hypot(vector.x + vector.y);
     },
     magnitudeSquared(vector) {
         return (vector.x * vector.x) + (vector.y * vector.y);

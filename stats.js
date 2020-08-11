@@ -5,7 +5,7 @@ const stats = {
     lastTimeStamp: performance.now(),
     percent: {},
     fps: [1],
-    registerEvents(eventNames = []) {
+    registerEvents(...eventNames) {
         eventNames.push('main')
         for (const eventName of eventNames) {
             this.lastStart[eventName] = Date.now();
@@ -35,8 +35,8 @@ const stats = {
         for (const eventName in this.durations) {
             if (eventName !== 'main') {
                 const durations = this.durations[eventName];
-                percent[eventName] = Math.round(moyMainDurationToOne * moy(durations) * 100);
-                document.getElementById(`stat-${eventName}`).innerHTML = percent[eventName];
+                this.percent[eventName] = Math.round(moyMainDurationToOne * moy(durations) * 100);
+                document.getElementById(`stat-${eventName}`).innerHTML = this.percent[eventName];
             } else document.getElementById(`stat-${eventName}`).innerHTML = Math.round(moyMainDurations);
         }
         document.getElementById(`stat-fps`).innerHTML = Math.round(moy(this.fps));
