@@ -44,13 +44,11 @@ function init() {
             const radius = size / 2;
             nbParticules++;
             Particules.push({
-                position: {
-                    x: randomize(0.5, x - horizontalGap, x + horizontalGap, config.particlePosition.randomization),
-                    y: randomize(0.5, y - verticalGap, y + verticalGap, config.particlePosition.randomization),
-                },
-                force: { x: 0, y: 0, },
-                gravity: { x: 0, y: 0, },
-                finalForce: { x: 0, y: 0 },
+                position: new Vector(
+                    randomize(0.5, x - horizontalGap, x + horizontalGap, config.particlePosition.randomization),
+                    randomize(0.5, y - verticalGap, y + verticalGap, config.particlePosition.randomization)
+                ),
+                force: new Vector(0, 0),
                 speed: 0,
                 mass: Math.PI * (radius ** 2) * config.particleDensity.value,
                 color: newColor(),
@@ -58,6 +56,9 @@ function init() {
                 moved: false,
                 radius,
                 collisionChecked: false,
+                addSpeed: function (d) {
+                    this.force = this.force.add(d);
+                },
             });
         }
     }

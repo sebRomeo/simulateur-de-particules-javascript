@@ -22,21 +22,22 @@ function loop(timestamp) {
                  const forceVectorA = Vector.mult(normalizedDeltaA, gravityValue);
                  const forceVectorB = Vector.mult(normalizedDeltaB, gravityValue); */
 
-                const subA = Vector.sub(P2.position, P1.position)
-                const normA = Vector.norm(subA)
-                const multA = Vector.mult(normA, gravityValue)
-                const subB = Vector.sub(P1.position, P2.position)
-                const normB = Vector.norm(subB)
-                const multB = Vector.mult(normB, gravityValue)
+                /*  const subA = Vector.sub(P2.position, P1.position)
+                 const normA = Vector.norm(subA)
+                 const multA = Vector.mult(normA, gravityValue)
+                 const subB = Vector.sub(P1.position, P2.position)
+                 const normB = Vector.norm(subB)
+                 const multB = Vector.mult(normB, gravityValue) */
                 // particles[i].addSpeed(Vector.sub(this, particles[i]).normalize().scale(this.gravity));
 
                 /* P1.force.x += forceVectorA.x;
                 P1.force.y += forceVectorA.y;
                 P2.force.x += forceVectorB.x;
                 P2.force.y += forceVectorB.y; */
-                P1.force = Vector.add(P1.force, multA);
-                P2.force = Vector.add(P2.force, multB);
-
+                // P1.force = Vector.add(P1.force, multA);
+                // P2.force = Vector.add(P2.force, multB);
+                P1.addSpeed(Vector.sub(P2.position, P1.position).normalize().scale(gravityValue))
+                P2.addSpeed(Vector.sub(P1.position, P2.position).normalize().scale(gravityValue))
             }
         }
     }
@@ -47,7 +48,7 @@ function loop(timestamp) {
         checked = i1 + 1;
         for (i2 = checked; i2 < nbParticules; i2++) {
             const P2 = Particules[i2];
-            //processColisions(P1, P2);
+            processColisions(P1, P2);
         }
     }
     stats.timeEnd('collision');
@@ -66,8 +67,8 @@ function loop(timestamp) {
 function processColisions(P1, P2) {
     const distance = Math.hypot(P2.position.x - P1.position.x, P2.position.y - P1.position.y);
     const doubleRadius = P1.radius + P2.radius;
-    P1.speed = Vector.magnitude(P1.force);
-    P2.speed = Vector.magnitude(P2.force);
+    P1.speed = P1.force.length();
+    P2.speed = P2.force.length();
     const p1OriginalPosition = P1.position
     const p2OriginalPosition = P2.position
 
