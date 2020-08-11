@@ -1,33 +1,44 @@
 const stats = {
     maxLengthForDurationArray: 16,
+    lastStart: {},
+    durations: {},
+    lastTimeStamp: performance.now(),
+    percent: {},
+    fps: [1],
     registerEvents(eventNames = []) {
         eventNames.push('main')
-        this.lastStart = {};
-        this.durations = {};
-        this.percent = {};
         for (const eventName of eventNames) {
             this.lastStart[eventName] = Date.now();
             this.durations[eventName] = [0];
             this.percent[eventName] = 0.1;
-            $('#stats').append(`<div>${eventName}<br><span id='stat-${eventName}'></span></div>`)
+            if (eventName !== 'main') $('#stats').append(`<div>${eventName}<br><span id='stat-${eventName}'></span></div>`)
         }
         setInterval(this.updateUI.bind(this), 1000)
     },
-    timeStart(eventName) {
-        this.lastStart[eventName] = Date.now();
+    loopStart(timestamp) {
+        const msSinceLastFrame = timestamp - this.lastStart.main;
+        this.fps.push(Math.round(1000 / msSinceLastFrame));
+        if (this.fps.length > this.maxLengthForDurationArray) this.fps.shift();
+        this.lastStart.main = timestamp;
+    },
+    timeStart(eventName, timeStamp = performance.now()) {
+        this.lastStart[eventName] = timeStamp;
     },
     timeEnd(eventName) {
-        this.durations[eventName].push(Date.now() - this.lastStart[eventName]);
+        const msSinceLastFrame = performance.now() - this.lastStart[eventName];
+        this.durations[eventName].push(msSinceLastFrame);
         if (this.durations[eventName].length > this.maxLengthForDurationArray) this.durations[eventName].shift();
     },
     updateUI() {
-        const moyMainDurationToOne = 1 / moy(this.durations.main);
+        const moyMainDurations = moy(this.durations.main);
+        const moyMainDurationToOne = 1 / moyMainDurations;
         for (const eventName in this.durations) {
             if (eventName !== 'main') {
-                const durations = this.durations[eventName]
-                percent[eventName] = Math.round(moyMainDurationToOne * moy(durations) * 100)
-                document.getElementById(`stat-${eventName}`).innerHTML = percent[eventName]
-            }
+                const durations = this.durations[eventName];
+                percent[eventName] = Math.round(moyMainDurationToOne * moy(durations) * 100);
+                document.getElementById(`stat-${eventName}`).innerHTML = percent[eventName];
+            } else document.getElementById(`stat-${eventName}`).innerHTML = Math.round(moyMainDurations);
         }
+        document.getElementById(`stat-fps`).innerHTML = Math.round(moy(this.fps));
     }
 }

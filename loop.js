@@ -1,60 +1,89 @@
+let frame = 0;
+function loop(timestamp) {
+    stats.loopStart(timestamp);
+    let i1, i2, checked;
+    // we just begin the second loop with i+1 because previous pairs have been tested
+    for (i1 = 0; i1 < nbParticules; i1++) {
+        const P1 = Particules[i1];
+        checked = i1 + 1;
+        for (i2 = checked; i2 < nbParticules; i2++) {
+            const P2 = Particules[i2];
 
-function loop(config) {
-    const disableGravity = config.gravity.value === 0;
-    stats.registerEvents();
-    return () => {
-        stats.timeStart('main');
-        const bodies = Composite.allBodies(world);
-        let i1, i2, checked;
-        const nbBodies = bodies.length;
-        // we just begin the second loop with i+1 because previous pairs have been tested
-        for (i1 = 0; i1 < nbBodies; i1++) {
-            const bodyA = bodies[i1];
-            const { mass: mass1, position: positionA, isStatic: isStaticA } = bodyA;
-            if (isStaticA) continue;
-            checked = i1 + 1;
-            for (i2 = checked; i2 < nbBodies; i2++) {
-                const bodyB = bodies[i2];
-                const { mass: mass2, position: positionB, isStatic: isStaticB } = bodyB;
-                if (isStaticB) continue;
-                const distance = Math.hypot(positionB.x - positionA.x, positionB.y - positionA.y);
-                // console.log(`distance`, distance) // 551
-                // console.log('targetAngleA', targetAngleA) // 1.6
-                // console.log('targetAngleB', targetAngleB) // -1.6
-                // console.log(`bodyA.force`, bodyA.force) // { x, y }
-                // console.log(`bodyA.size`, bodyA.size) // { x, y }
+            const distanceSquared = ((P2.position.x - P1.position.x) ** 2) + ((P2.position.y - P1.position.y) ** 2);
 
-                if (distance < config.minDistanceForCollisionDetection) processColisions(bodyA, bodyB);
+            processColisions(P1, P2, distanceSquared);
 
-                if (!disableGravity) {
-                    const gravityValue = config.gravity.value * ((gravitationalConstant * mass1 * mass2) / (distance ** 2))
+            if (!config.disableGravity) {
+                const gravityValue = config.gravity.value * ((gravitationalConstant * P1.mass * P2.mass) / distanceSquared)
 
-                    const deltaVectorA = Matter.Vector.sub(positionB, positionA);
-                    const normalizedDeltaA = Matter.Vector.normalise(deltaVectorA);
-                    const normalizedDeltaB = { x: 0 - normalizedDeltaA.x, y: 0 - normalizedDeltaA.y };
-                    const forceVectorA = Matter.Vector.mult(normalizedDeltaA, gravityValue);
-                    const forceVectorB = Matter.Vector.mult(normalizedDeltaB, gravityValue);
-                    Body.applyForce(bodyA, positionA, forceVectorA);
-                    Body.applyForce(bodyB, positionB, forceVectorB);
-
-
-                    //Body.applyForce(myBody, myBody.position, forceVector);
-                    /* 
-                                        const targetAngleA = Matter.Vector.angle(positionA, positionB);
-                                        const targetAngleB = 0 - targetAngleA;
-                                        console.log(`gravityValueA`, mass1, gravityValue)
-                    
-                                        Body.applyForce(bodyA, positionA, {
-                                            x: Math.sin(targetAngleA) * gravityValue,
-                                            y: Math.cos(targetAngleA) * gravityValue
-                                        });
-                                        Body.applyForce(bodyB, positionB, {
-                                            x: Math.sin(targetAngleB) * gravityValue,
-                                            y: Math.cos(targetAngleB) * gravityValue
-                                        }); */
-                }
+                const deltaVectorA = Vector.sub(P2.position, P1.position);
+                const normalizedDeltaA = Vector.norm(deltaVectorA);
+                const normalizedDeltaB = { x: 0 - normalizedDeltaA.x, y: 0 - normalizedDeltaA.y };
+                const forceVectorA = Vector.mult(normalizedDeltaA, gravityValue);
+                const forceVectorB = Vector.mult(normalizedDeltaB, gravityValue);
+                P1.force.x += forceVectorA.x;
+                P1.force.y += forceVectorA.y;
+                P2.force.x += forceVectorB.x;
+                P2.force.y += forceVectorB.y;
             }
         }
-        stats.timeEnd('main');
     }
+
+    ctx.clearRect(0, 0, w, h);
+    for (const P of Particules) {
+        P.position = Vector.add(P.position, P.force); // apply force
+        draw(P);
+        P.collisionChecked = false;
+    }
+
+    if (!simulation.paused) window.requestAnimationFrame(loop);
+}
+
+
+function processColisions(P1, P2, distanceSquared) {
+    if (distanceSquared < (P1.radius + P2.radius) ** 2 && !P1.collisionChecked && !P2.collisionChecked) {
+        // only one collision per frame
+        P1.collisionChecked = true;
+        P2.collisionChecked = true;
+        /* TODO test for perf between those 2 working functions
+                const distance = Math.sqrt(distanceSquared)
+        
+                const vCollisionNorm = { x: (P2.position.x - P1.position.x) / distance, y: (P2.position.y - P1.position.y) / distance };
+        
+                const vRelativeVelocity = { x: P1.force.x - P2.force.x, y: P1.force.y - P2.force.y };
+        
+                const speed = (vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y) * 0.01;
+        
+                const impulse = 2 * speed / (P1.mass + P2.mass);
+                P1.force.x -= (impulse * P2.mass * vCollisionNorm.x);
+                P1.force.y -= (impulse * P2.mass * vCollisionNorm.y);
+                P2.force.x += (impulse * P1.mass * vCollisionNorm.x);
+                P2.force.y += (impulse * P1.mass * vCollisionNorm.y); */
+
+        var m1 = P1.mass
+        var m2 = P2.mass
+        var theta = -Math.atan2(P2.position.y - P1.position.y, P2.position.x - P1.position.x);
+        console.log(`theta`, theta)
+        var v1 = rotate(P1.force, theta);
+        var v2 = rotate(P2.force, theta);
+        var u1 = rotate({ x: v1.x * (m1 - m2) / (m1 + m2) + v2.x * 2 * m2 / (m1 + m2), y: v1.y }, -theta);
+        var u2 = rotate({ x: v2.x * (m2 - m1) / (m1 + m2) + v1.x * 2 * m1 / (m1 + m2), y: v2.y }, -theta);
+        console.log(`v1,v2,u1,u2`, v1, v2, u1, u2)
+
+        P1.force.x = u1.x;
+        P1.force.y = u1.y;
+        P2.force.x = u2.x;
+        P2.force.y = u2.y;
+    }
+}
+
+function draw(P) {
+    ctx.beginPath();
+    ctx.arc(P.position.x, P.position.y, P.radius, 0, 2 * Math.PI, false);
+    ctx.fillStyle = P.color;
+    ctx.fill();
+}
+
+function rotate(v, theta) {
+    return { x: v.x * Math.cos(theta) - v.y * Math.sin(theta), y: v.x * Math.sin(theta) + v.y * Math.cos(theta) };
 }

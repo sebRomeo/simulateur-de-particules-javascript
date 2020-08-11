@@ -3,7 +3,8 @@ body, html {
     background: radial-gradient(circle, rgba(57, 19, 2, 1) 0%, rgba(0, 0, 0, 1) 100%) no-repeat bottom;
     height: 100vh;
     margin: 0;
-    padding: 0
+    padding: 0;
+        color: #ccc;
 }
 
 #stats, #controls {
@@ -19,3 +20,7 @@ body, html {
 }
 
 #controls div {display:inline-block;}
+
+#stats {
+    right:0;
+}

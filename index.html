@@ -9,7 +9,10 @@
 
 <body>
     <div><canvas id="scene" style="width:100vw;height:100vh"></canvas></div>
-    <div id="stats"></div>
+    <div id="stats">
+        <div>FPS<br><span id='stat-fps'></span></div>
+        <div>MS<br><span id='stat-main'></span></div>
+    </div>
     <div id="controls">
         <div id='controls-play'>Play</div>
         <div id='controls-pause'>Pause</div>
@@ -18,9 +21,12 @@
     <script src="./libs/matter.js"></script>
     <script src="./libs/utils.js"></script>
     <script src="./libs/jquery.js"></script>
+    <script src="./libs/vector2.js"></script>
+    <script src="./varz.js"></script>
     <script src="./loop.js"></script>
     <script src="./stats.js"></script>
     <script src="./main.js"></script>
+    <script>init();</script>
 </body>
 
 </html>
