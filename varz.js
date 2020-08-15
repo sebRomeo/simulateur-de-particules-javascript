@@ -24,6 +24,7 @@ const config = {
     horizontalMargin: 150,
     verticalMargin: 150,
     disableCollisions: { name: `Désactiver les collisions`, value: false },
+    broadPhaseDistanceMargin: 5, // broadphase friends consideration
 };
 
 let Particules = [];

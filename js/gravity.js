@@ -12,7 +12,7 @@ function gravity() {
             P2.speed = P2.force.length();
             const doubleRadius = P1.radius + P2.radius;
             const maxCollisionDistance = doubleRadius + P1.speed + P2.speed; // distance max en px parcourue
-            if (distance < maxCollisionDistance) {
+            if (distance < maxCollisionDistance + config.broadPhaseDistanceMargin) {
                 P1.friends.push({
                     P: P2,
                     distance,

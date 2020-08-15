@@ -4,11 +4,9 @@ function solver() {
 
 function detectCollisionAndAdjust() {
     let detectedOverlap = false;
-    for (i1 = 0; i1 < nbParticules; i1++) {
-        const P1 = Particules[i1];
-        checked = i1 + 1;
-        for (i2 = checked; i2 < nbParticules; i2++) {
-            const P2 = Particules[i2];
+    for (const P1 of Particules) {
+        for (const { P: P2 } of P1.friends) {
+            //const P2 = Particules[i2];
             const distance = Math.hypot(P2.position.x - P1.position.x, P2.position.y - P1.position.y);
             const doubleRadius = P1.radius + P2.radius;
 

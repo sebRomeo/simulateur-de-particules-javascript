@@ -1,18 +1,20 @@
 
 function processColisions() {
-    for (i1 = 0; i1 < nbParticules; i1++) {
+    /* for (i1 = 0; i1 < nbParticules; i1++) {
         const P1 = Particules[i1];
         checked = i1 + 1;
-        for (i2 = checked; i2 < nbParticules; i2++) {
-            const P2 = Particules[i2];
-            const distance = Math.hypot(P2.position.x - P1.position.x, P2.position.y - P1.position.y);
-            const doubleRadius = P1.radius + P2.radius;
-            P1.speed = P1.force.length();
-            P2.speed = P2.force.length();
+        for (i2 = checked; i2 < nbParticules; i2++) { */
+
+    for (const P1 of Particules) {
+        for (const friend of P1.friends) {
+            const { P: P2, distance, maxCollisionDistance } = friend;
+            //const P2 = Particules[i2];
+            //const distance = Math.hypot(P2.position.x - P1.position.x, P2.position.y - P1.position.y);
+            //const doubleRadius = P1.radius + P2.radius;
             const p1OriginalPosition = P1.position
             const p2OriginalPosition = P2.position
 
-            const maxCollisionDistance = doubleRadius + P1.speed + P2.speed; // distance max en px parcourue
+            //const maxCollisionDistance = doubleRadius + P1.speed + P2.speed; // distance max en px parcourue
 
             if (distance < maxCollisionDistance && !P1.collisionChecked && !P2.collisionChecked) {
 
@@ -37,6 +39,7 @@ function processColisions() {
                     }
 
                     const newDistance = Math.hypot(P2.position.x - P1.position.x, P2.position.y - P1.position.y);
+                    friend.distance = newDistance;
 
                     if (!resolved && newDistance <= P1.radius + P2.radius) {
                         // collision computed
