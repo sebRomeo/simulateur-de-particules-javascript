@@ -1,10 +1,10 @@
 body, html {
     background: #111;
-    background: radial-gradient(circle, rgba(57, 19, 2, 1) 0%, rgba(0, 0, 0, 1) 100%) no-repeat bottom;
+    /* background: radial-gradient(circle, rgba(57, 19, 2, 1) 0%, rgba(0, 0, 0, 1) 100%) no-repeat bottom; */
     height: 100vh;
     margin: 0;
     padding: 0;
-        color: #ccc;
+    color: #ccc;
 }
 
 #stats, #controls {
@@ -19,8 +19,30 @@ body, html {
     padding: 5px 15px;
 }
 
-#controls div {display:inline-block;}
+#controls div {
+    display: inline-block;
+}
 
 #stats {
-    right:0;
+    right: 0;
+}
+
+/*  */
+
+.dg .main input {
+    width: 42px !important;
+    text-align: center;
+}
+
+.dg .c {
+    width: 45% !important;
+}
+
+.property-name {
+    width: 55% !important;
+}
+
+.dg .slider {
+    width: calc(100% - 42px) !important;
+    height: 23px !important;
 }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulateur particule</title>
+    <link rel="stylesheet" href="./libs/dat.css">
     <link rel="stylesheet" href="./style.css">
 </head>
 
@@ -14,19 +15,24 @@
         <div>MS<br><span id='stat-main'></span></div>
     </div>
     <div id="controls">
-        <div id='controls-play'>Play</div>
-        <div id='controls-pause'>Pause</div>
+        <div id='controls-play'>Play/pause</div>
         <div id='controls-step-forward'>1 step</div>
     </div>
-    <script src="./libs/matter.js"></script>
+
     <script src="./libs/utils.js"></script>
     <script src="./libs/jquery.js"></script>
     <script src="./libs/vector2.js"></script>
+    <script src="./libs/dat.js"></script>
+
     <script src="./varz.js"></script>
-    <script src="./loop.js"></script>
     <script src="./stats.js"></script>
+    <script src="./loop.js"></script>
+    <script src="./js/collisions.js"></script>
+    <script src="./js/gravity.js"></script>
+    <script src="./js/solver.js"></script>
+
     <script src="./main.js"></script>
-    <script>init();</script>
+    <script src="./js/gui.js"></script>
 </body>
 
 </html>

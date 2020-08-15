@@ -1,77 +1,76 @@
-window.addEventListener('resize', () => (w = window.innerWidth) && (h = window.innerHeight))
-
-const canvas = document.getElementById('scene');
-const ctx = canvas.getContext('2d');
-canvas.width = w;
-canvas.height = h;
 
 
-const simulation = {
-    paused: true,
-    play: () => {
-        simulation.paused = false;
-        loop();
-    },
-    pause: () => simulation.paused = true,
-    stepForward: () => loop(),
-}
+function generateEnvironment() {
 
-$('#controls-play').click(() => simulation.play());
-$('#controls-pause').click(() => simulation.pause());
-$('#controls-step-forward').click(() => simulation.stepForward());
-
-const Particules = [];
-
-function init() {
+    Particules = [];
+    nbParticules = config.particleNb.value;
+    config.disableGravity = config.gravity.value === 0;
 
     const newColor = () => {
         const rdnClr = () => Math.round(255 - (random(0, 255) * config.colors.value));
         return `rgb(${rdnClr()},${rdnClr()},${rdnClr()})`;
     }
 
-    const averageParticleSize = minMax(config.particleSize.value, 0.1, 1) * 10;
-    const whRatio = w / h;
-    const horizontalMargin = 150;
-    const verticalMargin = 150;
-    const nbColumns = Math.floor(config.particleNb.value * 50);
-    const nbRows = Math.max(Math.floor(nbColumns / whRatio), 1);
-    const horizontalGap = Math.max((w - horizontalMargin - (nbColumns * averageParticleSize)) / ((nbColumns - 1) || 1), 1)
-    const verticalGap = Math.max((h - verticalMargin - (nbRows * averageParticleSize)) / ((nbRows - 1) || 1), 1)
+    const x = config.horizontalMargin;
+    const y = config.verticalMargin;
+    const xMax = w - config.horizontalMargin;
+    const yMax = h - config.verticalMargin;
 
-    for (let x = horizontalMargin; x < w - horizontalMargin; x += horizontalGap) {
-        for (let y = verticalMargin; y < h - verticalMargin; y += verticalGap) {
-            const size = randomize(config.particleSize.value, 1, 10, config.particleSize.randomization);
-            const radius = size / 2;
-            nbParticules++;
-            Particules.push({
-                position: new Vector(
-                    randomize(0.5, x - horizontalGap, x + horizontalGap, config.particlePosition.randomization),
-                    randomize(0.5, y - verticalGap, y + verticalGap, config.particlePosition.randomization)
-                ),
-                force: new Vector(0, 0),
-                speed: 0,
-                mass: Math.PI * (radius ** 2) * config.particleDensity.value,
-                color: newColor(),
-                size,
-                moved: false,
-                radius,
-                collisionChecked: false,
-                addSpeed: function (d) {
-                    this.force = this.force.add(d);
-                },
-            });
-        }
+    let n = config.particleNb.value;
+    let i = 0;
+    while (n > 0 || i > 9999) {
+        const size = randomize(config.particleSize.value, config.particleSize.min, config.particleSize.max, config.particleSize.randomization);
+        const radius = size / 2;
+        const P = {
+            position: new Vector(random(x, xMax), random(y, yMax)),
+            force: new Vector(0, 0),
+            speed: 0,
+            mass: Math.PI * (radius ** 2) * config.particleDensity.value,
+            color: newColor(),
+            size,
+            radius,
+            friends: [],
+            collisionChecked: false,
+            addSpeed: function (d) {
+                this.force = this.force.add(d);
+            },
+        };
+
+        if (!checkFirstCollisions(P)) {
+            Particules.push(P);
+            n--;
+        } else i++;
     }
+    if (i > 9999) alert('infinite loop')
 
-    stats.registerEvents('gravity', 'collision', 'draw');
+    gravityValue = gravityBaseValue / nbParticules;
+    ctx.clearRect(0, 0, w, h)
+    draw()
 };
 
+function checkFirstCollisions(P1) {
+    for (let i2 = 0; i2 < Particules.length; i2++) {
+        const P2 = Particules[i2];
+        const distance = Math.hypot(P2.position.x - P1.position.x, P2.position.y - P1.position.y);
+        const doubleRadius = P1.radius + P2.radius;
+        if (distance < doubleRadius && !P1.collisionChecked && !P2.collisionChecked) return true
+    }
+}
+
+const gravityValueWithoutFading = 1 - config.gravityFadeWithDistance.value * (config.gravity.value / 10);
+const getGravityValue = distanceSquared => {
+    const withFading = config.gravityFadeWithDistance.value * (1 / distanceSquared);
+    return (withFading + gravityValueWithoutFading) * gravityValue;
+}
 
 
-function randomize(value, min, max, randomizationStrength) {
-    const expectedValue = value * (max - min) + min;
-    const randomizedValue = expectedValue + ((Math.random() - 0.5) * ((max - min) / 2));
-    //console.log(Math.round(expectedValue), Math.round(randomizedValue), Math.round(expectedValue * (1 - randomizationStrength) + randomizedValue * randomizationStrength))
+function randomize(expectedValue, min, max, randomizationStrength = 1) {
+    if (randomizationStrength > 1) alert('wrong value for randomization strength')
+    const minInterval = Math.min(expectedValue - min, max - expectedValue);
+    const addRandomnessInRange = (Math.random() - 0.5) * minInterval;
+    /// randomisation de minInterval autour de expectedValue
+    const randomizedValue = expectedValue + addRandomnessInRange;
     return expectedValue * (1 - randomizationStrength) + randomizedValue * randomizationStrength;
 }
 
+generateEnvironment();
