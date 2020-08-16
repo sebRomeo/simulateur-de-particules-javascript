@@ -15,9 +15,6 @@ function loop() {
     gravity();
     stats.timeEnd('gravity');
     if (!config.disableCollisions.value) {
-        stats.timeStart('collision');
-        processColisions();
-        stats.timeEnd('collision');
         stats.timeStart('solver');
         solver();
         stats.timeEnd('solver');
@@ -29,18 +26,29 @@ function loop() {
     stats.timeEnd('main');
 }
 
-function draw(justDraw = false) {
-    for (const P of Particules) {
-        if (!justDraw) {
-            P.position = Vector.add(P.position, P.force); // apply force
-            P.addSpeed(P.gravity)
+const pi2 = 2 * Math.PI;
 
-            P.collisionChecked = false;
-            P.friends = [];
-            P.gravity = new Vector(0, 0);
-        }
+function draw() {
+    for (const P of Particules) {
+        P.force.add(P.gravity)
+        if (P.collisionChecked) P.position.add(P.gravity);
+        else P.position.add(P.force);
+
+        P.collisionChecked = false;
+        P.friends = [];
+        P.gravity = new Vector(0, 0);
         ctx.beginPath();
-        ctx.arc(P.position.x, P.position.y, P.radius, 0, 2 * Math.PI, false);
+        ctx.arc((P.position.x + viewPort.x) * zoom, (P.position.y + viewPort.y) * zoom, P.radius * zoom, 0, pi2, false);
+        ctx.fillStyle = P.color;
+        ctx.fill();
+    }
+}
+
+function redraw(clear = true) {
+    if (clear) ctx.clearRect(0, 0, w, h);
+    for (const P of Particules) {
+        ctx.beginPath();
+        ctx.arc((P.position.x + viewPort.x) * zoom, (P.position.y + viewPort.y) * zoom, P.radius * zoom, 0, pi2, false);
         ctx.fillStyle = P.color;
         ctx.fill();
     }

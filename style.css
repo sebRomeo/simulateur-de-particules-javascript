@@ -1,5 +1,5 @@
 body, html {
-    background: #111;
+    background: #000;
     /* background: radial-gradient(circle, rgba(57, 19, 2, 1) 0%, rgba(0, 0, 0, 1) 100%) no-repeat bottom; */
     height: 100vh;
     margin: 0;
@@ -45,4 +45,8 @@ body, html {
 .dg .slider {
     width: calc(100% - 42px) !important;
     height: 23px !important;
+}
+
+#scene {
+    cursor: move;
 }

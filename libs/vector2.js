@@ -13,6 +13,9 @@ Vector.add = function (a, b) {
 Vector.scale = function (v, s) {
     return v.clone().scale(s);
 };
+Vector.invert = function (v) {
+    return { x: 0 - v.x, y: 0 - v.y }
+};
 Vector.prototype = {
     set: function (x, y) {
         if (typeof x === 'object') {
@@ -49,7 +52,6 @@ Vector.prototype = {
     lengthSq: function () {
         return this.x * this.x + this.y * this.y;
     },
-
     normalize: function () {
         var m = Math.sqrt(this.x * this.x + this.y * this.y);
         if (m) {

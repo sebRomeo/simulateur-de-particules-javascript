@@ -1,15 +1,23 @@
+const newRandomColor = () => {
+    const rdnClr = () => Math.round(255 - (random(0, 255) * config.colors.value));
+    return `rgb(${rdnClr()},${rdnClr()},${rdnClr()})`;
+}
 
+const newColorPerQuarter = (pos) => {
+    const a = pos.x - (w / 2);
+    const b = pos.y - (h / 2);
+    if (a < 0 && b < 0) return `rgb(${randomize(100, 255, config.colors.value)},${randomize(50, 120, config.colors.value)},${randomize(50, 120, config.colors.value)})`;
+    if (a < 0 && b > 0) return `rgb(${randomize(100, 255, config.colors.value)},${randomize(50, 200, config.colors.value)},0)`;
+    if (a > 0 && b < 0) return `rgb(0,${randomize(50, 200, config.colors.value)},${randomize(100, 255, config.colors.value)})`;
+    if (a > 0 && b > 0) return `rgb(${randomize(50, 120, config.colors.value)},${randomize(50, 120, config.colors.value)},${randomize(100, 255, config.colors.value)})`;
+}
 
 function generateEnvironment() {
 
     Particules = [];
     nbParticules = config.particleNb.value;
     config.disableGravity = config.gravity.value === 0;
-
-    const newColor = () => {
-        const rdnClr = () => Math.round(255 - (random(0, 255) * config.colors.value));
-        return `rgb(${rdnClr()},${rdnClr()},${rdnClr()})`;
-    }
+    config.broadPhaseDistanceMargin = Math.min(config.particleSize.max, (config.particleSize.value - config.particleSize.min * 2))
 
     const whRatio = w / h;
     const horizontalMargin = config.margins.value;
@@ -22,25 +30,21 @@ function generateEnvironment() {
     let n = config.particleNb.value;
     let i = 0;
     while (n > 0 && i < 9999) {
-        const size = randomize(config.particleSize.value, config.particleSize.min, config.particleSize.max, config.particleSize.randomization);
+        const size = randomize(config.particleSize.min, config.particleSize.max, config.particleSize.randomization, config.particleSize.value);
+        const position = new Vector(random(x, xMax), random(y, yMax));
         const radius = size / 2;
+        const color = config.colorPerQuarter.value ? newColorPerQuarter(position) : newRandomColor();
         const P = {
-            position: new Vector(random(x, xMax), random(y, yMax)),
+            position,
             force: new Vector(0, 0),
             gravity: new Vector(0, 0),
             speed: 0,
             mass: Math.PI * (radius ** 2) * config.particleDensity.value,
-            color: newColor(),
+            color,
             size,
             radius,
             friends: [],
             collisionChecked: false,
-            addSpeed: function (d) {
-                this.force = this.force.add(d);
-            },
-            addGravity: function (d) {
-                this.gravity = this.gravity.add(d);
-            },
         };
 
         if (!checkFirstCollisions(P)) {
@@ -51,8 +55,11 @@ function generateEnvironment() {
     if (i >= 9999) alert('Nombre de particules maximum atteint')
 
     gravityValue = config.gravity.value / nbParticules;
-    ctx.clearRect(0, 0, w, h)
-    draw()
+    gravityValueWithoutFading = 1 - config.gravityFadeWithDistance.value;
+
+    viewPort = new Vector(0, 0)
+    lastViewportUpdate = new Vector(0, 0)
+    redraw()
 };
 
 function checkFirstCollisions(P1) {
@@ -64,15 +71,14 @@ function checkFirstCollisions(P1) {
     }
 }
 
-const gravityValueWithoutFading = 1 - config.gravityFadeWithDistance.value;
-const getGravityValue = distance => {
-    const withFading = config.gravityFadeWithDistance.value * (1 / distance);
+const getGravityValue = distanceSquared => {
+    const withFading = config.gravityFadeWithDistance.value * (1 / (distanceSquared * distanceSquared)) * (10 ** 5);
     return (withFading + gravityValueWithoutFading) * gravityValue;
 }
 
-
-function randomize(expectedValue, min, max, randomizationStrength = 1) {
+function randomize(min, max, randomizationStrength = 1, expectedValue) {
     if (randomizationStrength > 1) alert('wrong value for randomization strength')
+    if (!isset(expectedValue)) expectedValue = min + (max - min) / 2
     const minInterval = Math.min(expectedValue - min, max - expectedValue);
     const addRandomnessInRange = (Math.random() - 0.5) * minInterval;
     /// randomisation de minInterval autour de expectedValue

@@ -33,3 +33,31 @@ for (const paramName in config) {
     }
 }
 gui.close();
+
+//----------------------------------------
+// VIEWPORT NAVIGATION
+//----------------------------------------
+let lastMouseDownCoord = new Vector(0, 0)
+let simulationWasPlaying = false;
+
+function mouseMoveHandler(e) {
+    viewPort = lastViewportUpdate.clone()
+    const actualMouseCoord = new Vector(e.clientX, e.clientY)
+    const a = Vector.sub(lastMouseDownCoord, actualMouseCoord);
+    viewPort.sub(a)
+    redraw();
+}
+
+canvas.addEventListener("mousedown", function (e) {
+    if (simulation.paused === false) {
+        simulationWasPlaying = true;
+        simulation.pause();
+    }
+    lastMouseDownCoord = new Vector(e.clientX, e.clientY)
+    lastViewportUpdate = viewPort.clone();
+    canvas.addEventListener("mousemove", mouseMoveHandler)
+});
+canvas.addEventListener("mouseup", function (e) {
+    canvas.removeEventListener("mousemove", mouseMoveHandler)
+    if (simulationWasPlaying) { simulation.play(); simulationWasPlaying = false; }
+});
