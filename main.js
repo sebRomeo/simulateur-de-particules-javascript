@@ -11,19 +11,23 @@ function generateEnvironment() {
         return `rgb(${rdnClr()},${rdnClr()},${rdnClr()})`;
     }
 
-    const x = config.horizontalMargin;
-    const y = config.verticalMargin;
-    const xMax = w - config.horizontalMargin;
-    const yMax = h - config.verticalMargin;
+    const whRatio = w / h;
+    const horizontalMargin = config.margins.value;
+    const verticalMargin = config.margins.value / whRatio;
+    const x = horizontalMargin;
+    const y = verticalMargin;
+    const xMax = w - horizontalMargin;
+    const yMax = h - verticalMargin;
 
     let n = config.particleNb.value;
     let i = 0;
-    while (n > 0 || i > 9999) {
+    while (n > 0 && i < 9999) {
         const size = randomize(config.particleSize.value, config.particleSize.min, config.particleSize.max, config.particleSize.randomization);
         const radius = size / 2;
         const P = {
             position: new Vector(random(x, xMax), random(y, yMax)),
             force: new Vector(0, 0),
+            gravity: new Vector(0, 0),
             speed: 0,
             mass: Math.PI * (radius ** 2) * config.particleDensity.value,
             color: newColor(),
@@ -34,6 +38,9 @@ function generateEnvironment() {
             addSpeed: function (d) {
                 this.force = this.force.add(d);
             },
+            addGravity: function (d) {
+                this.gravity = this.gravity.add(d);
+            },
         };
 
         if (!checkFirstCollisions(P)) {
@@ -41,9 +48,9 @@ function generateEnvironment() {
             n--;
         } else i++;
     }
-    if (i > 9999) alert('infinite loop')
+    if (i >= 9999) alert('Nombre de particules maximum atteint')
 
-    gravityValue = gravityBaseValue / nbParticules;
+    gravityValue = config.gravity.value / nbParticules;
     ctx.clearRect(0, 0, w, h)
     draw()
 };
@@ -57,9 +64,9 @@ function checkFirstCollisions(P1) {
     }
 }
 
-const gravityValueWithoutFading = 1 - config.gravityFadeWithDistance.value * (config.gravity.value / 10);
-const getGravityValue = distanceSquared => {
-    const withFading = config.gravityFadeWithDistance.value * (1 / distanceSquared);
+const gravityValueWithoutFading = 1 - config.gravityFadeWithDistance.value;
+const getGravityValue = distance => {
+    const withFading = config.gravityFadeWithDistance.value * (1 / distance);
     return (withFading + gravityValueWithoutFading) * gravityValue;
 }
 

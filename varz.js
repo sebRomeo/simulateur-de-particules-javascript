@@ -11,26 +11,24 @@ window.addEventListener('resize', () => (w = window.innerWidth) && (h = window.i
 
 const config = {
     drawInterpolationFrames: false,
-    particleNb: { name: `Nombre de particules`, value: 300, min: 2, max: 999, step: 1, randomization: 0.2 },
+    particleNb: { name: `Nombre de particules`, value: 2, min: 2, max: 999, step: 1, randomization: 0.2 },
     //particleSpeed: { name: `Vitesse des particules`, value: 0.5, randomization: 0.2 },
     particleDensity: { name: `Densité des particules (poids)`, value: 0.5 },
     //particlePosition: { name: `Position des particules`, randomization: 0.5 },
-    particleSize: { name: `Taille des particules`, value: 3, min: 1, max: 50, step: 1, randomization: 0.5, },
-    gravity: { name: `Gravité`, value: 0.5 },
+    particleSize: { name: `Taille des particules`, value: 50, min: 1, max: 50, step: 1, randomization: 0.5, },
+    gravity: { name: `Gravité`, value: 0.02, min: 0.0002, max: 0.02, },
     gravityFadeWithDistance: { name: `Diminution de la gravité avec la distance`, value: 0.2, step: 0.1 },
-    restitution: { name: `Rebond`, value: 0.8, min: 0.7, max: 1, step: 0.1 },
+    restitution: { name: `Rebond`, value: 1, min: 0.7, max: 1, step: 0.1 },
     //atmos: { name: `Atmosphere`, value: 1, randomization: 0.2 },
     colors: { name: `Couleurs`, value: 0.5, randomization: 0.2, step: 0.1 },
-    horizontalMargin: 150,
-    verticalMargin: 150,
+    margins: { name: `Marges`, value: 100, min: 0, max: 300, step: 0.1 },
     disableCollisions: { name: `Désactiver les collisions`, value: false },
     broadPhaseDistanceMargin: 5, // broadphase friends consideration
 };
 
 let Particules = [];
 let nbParticules = 0;
-let gravityBaseValue = 0.002;
-let gravityValue = 0.02;// to be divided by particules nb
+let gravityValue = 0.002;// to be divided by particules nb
 
 const simulation = {
     paused: true,

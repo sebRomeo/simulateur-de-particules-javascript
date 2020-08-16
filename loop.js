@@ -14,12 +14,14 @@ function loop() {
     stats.timeStart('gravity');
     gravity();
     stats.timeEnd('gravity');
-    stats.timeStart('collision');
-    processColisions();
-    stats.timeEnd('collision');
-    stats.timeStart('solver');
-    solver();
-    stats.timeEnd('solver');
+    if (!config.disableCollisions.value) {
+        stats.timeStart('collision');
+        processColisions();
+        stats.timeEnd('collision');
+        stats.timeStart('solver');
+        solver();
+        stats.timeEnd('solver');
+    }
     stats.timeStart('draw');
     draw();
     stats.timeEnd('draw');
@@ -30,8 +32,12 @@ function loop() {
 function draw(justDraw = false) {
     for (const P of Particules) {
         if (!justDraw) {
-            if (!P.collisionChecked) P.position = Vector.add(P.position, P.force); // apply force
+            P.position = Vector.add(P.position, P.force); // apply force
+            P.addSpeed(P.gravity)
+
             P.collisionChecked = false;
+            P.friends = [];
+            P.gravity = new Vector(0, 0);
         }
         ctx.beginPath();
         ctx.arc(P.position.x, P.position.y, P.radius, 0, 2 * Math.PI, false);
