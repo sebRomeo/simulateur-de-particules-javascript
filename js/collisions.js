@@ -12,8 +12,7 @@ function processColisions(P1, friend) {
         let p1yStep = P1.force.y / nbSteps;
         let p2xStep = P2.force.x / nbSteps;
         let p2yStep = P2.force.y / nbSteps;
-        const totalMass = P1.mass + P2.mass
-        const m1Mm2 = P1.mass - P2.mass
+        // const m1Mm2 = P1.mass - P2.mass
 
         // interpolation
         let step = nbSteps
@@ -24,35 +23,24 @@ function processColisions(P1, friend) {
 
             const p2Xmp1X = P2.position.x - P1.position.x;
             const p2Ymp1Y = P2.position.y - P1.position.y;
-            const newDistance = Math.hypot(p2Xmp1X, p2Ymp1Y);
 
-            if (newDistance <= P1.radius + P2.radius) {
-
-                /* const theta = -Math.atan2(p2Ymp1Y, p2Xmp1X);
-
-                const v1 = rotate(P1.force, theta);
-                const v2 = rotate(P2.force, theta);
-                const u1 = rotate({ x: v1.x * m1Mm2 / totalMass + v2.x * 2 * P2.mass / totalMass, y: v1.y }, -theta);
-                const u2 = rotate({ x: v2.x * m1Mm2 / totalMass + v1.x * 2 * P1.mass / totalMass, y: v2.y }, -theta);
-
-                P1.force.x = u1.x * config.restitution.value;
-                P1.force.y = u1.y * config.restitution.value;
-                P2.force.x = u2.x * config.restitution.value;
-                P2.force.y = u2.y * config.restitution.value; */
-                const vCollisionNorm = { x: (P2.position.x - P1.position.x) / newDistance, y: (P2.position.y - P1.position.y) / newDistance };
+            if (Math.hypot(p2Xmp1X, p2Ymp1Y) <= friend.doubleRadius) {
+                const vCollisionNorm = { x: (P2.position.x - P1.position.x) / friend.doubleRadius, y: (P2.position.y - P1.position.y) / friend.doubleRadius };
 
                 const vRelativeVelocity = {
                     x: P1.force.x - P2.force.x,
                     y: P1.force.y - P2.force.y
                 };
 
-                const speed = (vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y) * config.restitution.value;
+                const speed = (vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y);
 
-                const impulse = 2 * speed / totalMass;
+                const impulse = 2 * speed / friend.totalMass;
                 P1.force.x -= (impulse * P2.mass * vCollisionNorm.x);
                 P1.force.y -= (impulse * P2.mass * vCollisionNorm.y);
                 P2.force.x += (impulse * P1.mass * vCollisionNorm.x);
                 P2.force.y += (impulse * P1.mass * vCollisionNorm.y);
+                P1.force.scale(config.restitution.value)
+                P2.force.scale(config.restitution.value)
 
                 P1.position.add({
                     x: (P1.force.x / nbSteps) * step,

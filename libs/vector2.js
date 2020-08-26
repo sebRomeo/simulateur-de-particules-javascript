@@ -14,7 +14,7 @@ Vector.scale = function (v, s) {
     return v.clone().scale(s);
 };
 Vector.invert = function (v) {
-    return { x: 0 - v.x, y: 0 - v.y }
+    return new Vector(0 - v.x, 0 - v.y)
 };
 Vector.prototype = {
     set: function (x, y) {

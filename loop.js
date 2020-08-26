@@ -38,7 +38,7 @@ function draw() {
         P.friends = [];
         P.gravity = new Vector(0, 0);
         ctx.beginPath();
-        ctx.arc((P.position.x + viewPort.x) * zoom, (P.position.y + viewPort.y) * zoom, P.radius * zoom, 0, pi2, false);
+        ctx.arc((P.position.x + viewPort.x) * zoom, (P.position.y + viewPort.y) * zoom, Math.max(P.radius * zoom, 0.5), 0, pi2, false);
         ctx.fillStyle = P.color;
         ctx.fill();
     }
@@ -48,7 +48,7 @@ function redraw(clear = true) {
     if (clear) ctx.clearRect(0, 0, w, h);
     for (const P of Particules) {
         ctx.beginPath();
-        ctx.arc((P.position.x + viewPort.x) * zoom, (P.position.y + viewPort.y) * zoom, P.radius * zoom, 0, pi2, false);
+        ctx.arc((P.position.x + viewPort.x) * zoom, (P.position.y + viewPort.y) * zoom, Math.max(P.radius * zoom, 0.5), 0, pi2, false);
         ctx.fillStyle = P.color;
         ctx.fill();
     }

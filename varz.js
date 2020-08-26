@@ -16,8 +16,8 @@ const defaults = {
     drawInterpolationFrames: false,
     particleNb: { name: `Nombre de particules`, value: 999, min: 2, max: 999, step: 1, randomization: 0.2 },
     particleDensity: { name: `Densité des particules (poids)`, value: 0.5 },
-    particleSize: { name: `Taille des particules`, value: 4, min: 1, max: 50, step: 1, randomization: 0.5, },
-    gravity: { name: `Gravité`, value: 0.08, min: 0.0002, max: 0.02, },
+    particleSize: { name: `Taille des particules`, value: 8, min: 1, max: 50, step: 1, randomization: 1, },
+    gravity: { name: `Gravité`, value: 0.08, min: 0.0002, max: 0.08, },
     gravityFadeWithDistance: { name: `Diminution de la gravité avec la distance`, value: 0.5, step: 0.1 },
     restitution: { name: `Rebond`, value: 0.9, min: 0.5, max: 1, step: 0.01 },
     colors: { name: `Couleurs`, value: 0.5, randomization: 0.2, step: 0.1 },
@@ -28,20 +28,41 @@ const defaults = {
 };
 
 const preset1 = {
-    particleNb: 50,
-    particleSize: 6,
+    name: `Cosmos maxi`,
+    particleNb: 999,
+    particleSize: 1,
     gravityFadeWithDistance: 1,
-    restitution: 0,
+    restitution: 0.95,
+    gravity: 0.02,
+    margins: 20,
+}
+const preset11 = {
+    name: `Cosmos medium`,
+    particleNb: 500,
+    particleSize: 2,
+    gravityFadeWithDistance: 1,
+    restitution: 0.95,
+    gravity: 0.01,
+    margins: 20,
 }
 
 const preset2 = {
-    particleNb: 25,
-    particleSize: 12,
-    gravityFadeWithDistance: 0.5,
-    restitution: 0.9,
+    particleNb: 150,
+    particleSize: 3,
+    gravityFadeWithDistance: 1,
+    restitution: 0.95,
+    gravity: 0.009,
+
 }
 
-let config = buildConfig(preset2);
+const preset3 = {
+    particleNb: 300,
+    particleSize: 8,
+    gravityFadeWithDistance: 1,
+    restitution: 0.1,
+}
+
+let config = buildConfig(preset1);
 
 let Particules = [];
 let nbParticules = 0;
@@ -68,6 +89,9 @@ let gravityValueWithoutFading = 1 - config.gravityFadeWithDistance.value;
 
 function buildConfig(preset) {
     const newPreset = { ...defaults };
-    for (const paramName in newPreset) if (isset(preset[paramName])) newPreset[paramName].value = preset[paramName];
+    for (const paramName in newPreset) if (isset(preset[paramName])) {
+        if (typeof preset[paramName] === 'object') Object.assign(newPreset[paramName], preset[paramName]);
+        else newPreset[paramName].value = preset[paramName];
+    }
     return newPreset;
 }

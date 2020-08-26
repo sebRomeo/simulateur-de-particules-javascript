@@ -12,12 +12,14 @@ const newColorPerQuarter = (pos) => {
     if (a > 0 && b > 0) return `rgb(${randomize(50, 120, config.colors.value)},${randomize(50, 120, config.colors.value)},${randomize(100, 255, config.colors.value)})`;
 }
 
+let particleCouples = [];
+
 function generateEnvironment() {
 
     Particules = [];
     nbParticules = config.particleNb.value;
     config.disableGravity = config.gravity.value === 0;
-    config.broadPhaseDistanceMargin = Math.min(config.particleSize.max, (config.particleSize.value - config.particleSize.min * 2))
+    config.broadPhaseDistanceMargin = Math.min(config.particleSize.max, config.particleSize.value * 2)
 
     const whRatio = w / h;
     const horizontalMargin = config.margins.value;
@@ -60,6 +62,7 @@ function generateEnvironment() {
     viewPort = new Vector(0, 0)
     lastViewportUpdate = new Vector(0, 0)
     redraw()
+    generateParticleCouples();
 };
 
 function checkFirstCollisions(P1) {
@@ -72,7 +75,7 @@ function checkFirstCollisions(P1) {
 }
 
 const getGravityValue = distanceSquared => {
-    const withFading = config.gravityFadeWithDistance.value * (1 / (distanceSquared * distanceSquared)) * (10 ** 5);
+    const withFading = config.gravityFadeWithDistance.value * (1 / (distanceSquared)) * (10 ** 3);
     return (withFading + gravityValueWithoutFading) * gravityValue;
 }
 
@@ -84,6 +87,31 @@ function randomize(min, max, randomizationStrength = 1, expectedValue) {
     /// randomisation de minInterval autour de expectedValue
     const randomizedValue = expectedValue + addRandomnessInRange;
     return expectedValue * (1 - randomizationStrength) + randomizedValue * randomizationStrength;
+}
+
+function generateParticleCouples() {
+    for (i1 = 0; i1 < nbParticules; i1++) {
+        const P1 = Particules[i1];
+        checked = i1 + 1;
+        for (i2 = checked; i2 < nbParticules; i2++) {
+            const P2 = Particules[i2];
+            const distanceSquared = Math.pow(P2.position.x - P1.position.x, 2) + Math.pow(P2.position.y - P1.position.y, 2)
+            const distance = Math.sqrt(distanceSquared);
+
+            const doubleRadius = P1.radius + P2.radius;
+            const maxGravity = getGravityValue((P1.radius + P2.radius) ** 2);
+            const totalMass = P1.mass + P2.mass
+
+            if (!isset(particleCouples[i1])) particleCouples[i1] = [];
+            particleCouples[i1][i2] = {
+                P: P2,
+                doubleRadius,
+                totalMass,
+                maxGravity,
+                distance,
+            }
+        }
+    }
 }
 
 generateEnvironment();

@@ -61,3 +61,22 @@ canvas.addEventListener("mouseup", function (e) {
     canvas.removeEventListener("mousemove", mouseMoveHandler)
     if (simulationWasPlaying) { simulation.play(); simulationWasPlaying = false; }
 });
+/* canvas.addEventListener("wheel", function () {
+    console.log(`scrolled`)
+    if (this.oldScroll > this.scrollY) {
+      
+    this.oldScroll = this.scrollY;
+}) */
+
+
+canvas.addEventListener('wheel', function (event) {
+    if (event.deltaY < 0) {
+        // scroll up
+        zoom += 0.1;
+        redraw(true);
+    } else {
+        // scroll down
+        zoom -= 0.1;
+        redraw(true);
+    }
+});

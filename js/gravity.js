@@ -11,26 +11,22 @@ function gravity() {
             P1.speed = P1.force.length();
             P2.speed = P2.force.length();
 
-            const doubleRadius = P1.radius + P2.radius;
-            const maxCollisionDistance = doubleRadius + P1.speed + P2.speed; // distance max en px parcourue
+            const friend = particleCouples[i1][i2]
+            const maxCollisionDistance = friend.doubleRadius + P1.speed + P2.speed; // distance max en px parcourue
 
             if (distance < maxCollisionDistance + config.broadPhaseDistanceMargin) {
-                const friend = {
-                    P: P2,
-                    distance,
-                    maxCollisionDistance,
-                    doubleRadius,
-                };
+                friend.distance = distance;
+                friend.maxCollisionDistance = maxCollisionDistance;
                 P1.friends.push(friend)
                 processColisions(P1, friend);
             }
 
             if (!config.disableGravity) {
-                const gravityValue = getGravityValue(distanceSquared);
-                const v1 = Vector.sub(P2.position, P1.position).normalize().scale(gravityValue);
+                const gravityValue = Math.min(getGravityValue(distanceSquared), friend.maxGravity);
+                const v1 = Vector.sub(P2.position, P1.position).normalize();
                 const v2 = Vector.invert(v1)
-                P1.gravity.add(v1);
-                P2.gravity.add(v2);
+                P1.gravity.add(v1.scale(gravityValue * P2.mass));
+                P2.gravity.add(v2.scale(gravityValue * P1.mass));
             }
         }
     }
