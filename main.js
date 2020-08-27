@@ -69,13 +69,7 @@ function generateEnvironment() {
     redraw()
     generateParticleCouples();
 
-    gravitiesUpdated = false;
-    gravitiesToBeUpdated = gravities;
-    particlesUpdated = false;
-    particlesToBeUpdated = Particules;
-
     gravityWorker.postMessage(['registerGlobals', config, particleCouples, gravityValueWithoutFading, gravityValue, Particules.length]);
-    collisionWorker.postMessage(['registerGlobals', config, particleCouples, broadPhaseMaxHorizontalDistance, gravityValue, Particules.length]);
 };
 
 function doParticleCollideWithOthers(P1) {

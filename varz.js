@@ -1,11 +1,6 @@
 const canvas = document.getElementById('scene');
 const ctx = canvas.getContext('2d');
 const gravityWorker = new Worker('./js/gravity-worker.js');
-const collisionWorker = new Worker('./js/collision-worker.js');
-let gravitiesUpdated = false;
-let gravitiesToBeUpdated = [];
-let particlesUpdated = false;
-let particlesToBeUpdated = [];
 
 let broadPhaseMaxHorizontalDistance;
 //const gravitationalConstant = 6.67408 * Math.pow(10, -4);// Math.pow(10, -11);
