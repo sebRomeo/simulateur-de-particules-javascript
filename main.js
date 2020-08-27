@@ -20,6 +20,7 @@ function generateEnvironment() {
     nbParticules = config.particleNb.value;
     config.disableGravity = config.gravity.value === 0;
     config.broadPhaseDistanceMargin = Math.min(config.particleSize.max, config.particleSize.value * 2)
+    broadPhaseMaxHorizontalDistance = 0;
 
     const whRatio = w / h;
     const horizontalMargin = config.margins.value;
@@ -31,15 +32,17 @@ function generateEnvironment() {
 
     let n = config.particleNb.value;
     let i = 0;
+    let particleIndex = 0;
     while (n > 0 && i < 9999) {
         const size = randomize(config.particleSize.min, config.particleSize.max, config.particleSize.randomization, config.particleSize.value);
         const position = new Vector(random(x, xMax), random(y, yMax));
         const radius = size / 2;
         const color = config.colorPerQuarter.value ? newColorPerQuarter(position) : newRandomColor();
         const P = {
+            i: particleIndex,
             position,
             force: new Vector(0, 0),
-            gravity: new Vector(0, 0),
+            //gravity: new Vector(0, 0),
             speed: 0,
             mass: Math.PI * (radius ** 2) * config.particleDensity.value,
             color,
@@ -49,8 +52,10 @@ function generateEnvironment() {
             collisionChecked: false,
         };
 
-        if (!checkFirstCollisions(P)) {
+        if (!doParticleCollideWithOthers(P)) {
             Particules.push(P);
+            gravities[particleIndex] = new Vector(0, 0);
+            particleIndex++;
             n--;
         } else i++;
     }
@@ -63,9 +68,17 @@ function generateEnvironment() {
     lastViewportUpdate = new Vector(0, 0)
     redraw()
     generateParticleCouples();
+
+    gravitiesUpdated = false;
+    gravitiesToBeUpdated = gravities;
+    particlesUpdated = false;
+    particlesToBeUpdated = Particules;
+
+    gravityWorker.postMessage(['registerGlobals', config, particleCouples, gravityValueWithoutFading, gravityValue, Particules.length]);
+    collisionWorker.postMessage(['registerGlobals', config, particleCouples, broadPhaseMaxHorizontalDistance, gravityValue, Particules.length]);
 };
 
-function checkFirstCollisions(P1) {
+function doParticleCollideWithOthers(P1) {
     for (let i2 = 0; i2 < Particules.length; i2++) {
         const P2 = Particules[i2];
         const distance = Math.hypot(P2.position.x - P1.position.x, P2.position.y - P1.position.y);
@@ -101,6 +114,8 @@ function generateParticleCouples() {
             const doubleRadius = P1.radius + P2.radius;
             const maxGravity = getGravityValue((P1.radius + P2.radius) ** 2);
             const totalMass = P1.mass + P2.mass
+
+            broadPhaseMaxHorizontalDistance = Math.max(doubleRadius * 10, broadPhaseMaxHorizontalDistance);
 
             if (!isset(particleCouples[i1])) particleCouples[i1] = [];
             particleCouples[i1][i2] = {

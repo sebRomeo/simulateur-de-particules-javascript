@@ -4,11 +4,7 @@ function solver() {
 
 function detectCollisionAndAdjust() {
     let detectedOverlap = false;
-    for (const P1 of Particules) {
-        for (const friend of P1.friends) {
-            solveConstraint(P1, friend)
-        }
-    }
+    for (const P1 of Particules) for (const friend of P1.friends) solveConstraint(P1, friend)
     return detectedOverlap;
 }
 

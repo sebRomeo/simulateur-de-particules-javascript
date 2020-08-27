@@ -1,6 +1,13 @@
 const canvas = document.getElementById('scene');
 const ctx = canvas.getContext('2d');
+const gravityWorker = new Worker('./js/gravity-worker.js');
+const collisionWorker = new Worker('./js/collision-worker.js');
+let gravitiesUpdated = false;
+let gravitiesToBeUpdated = [];
+let particlesUpdated = false;
+let particlesToBeUpdated = [];
 
+let broadPhaseMaxHorizontalDistance;
 //const gravitationalConstant = 6.67408 * Math.pow(10, -4);// Math.pow(10, -11);
 
 let w = window.innerWidth
@@ -11,6 +18,7 @@ window.addEventListener('resize', () => (w = window.innerWidth) && (h = window.i
 let viewPort = new Vector(0, 0);
 let lastViewportUpdate;
 let zoom = 1;
+let gravities = [];
 
 const defaults = {
     drawInterpolationFrames: false,
@@ -47,12 +55,13 @@ const preset11 = {
 }
 
 const preset2 = {
-    particleNb: 150,
-    particleSize: 3,
+    name: `Big few`,
+    particleNb: 50,
+    particleSize: 15,
     gravityFadeWithDistance: 1,
     restitution: 0.95,
     gravity: 0.009,
-
+    margins: 20,
 }
 
 const preset3 = {

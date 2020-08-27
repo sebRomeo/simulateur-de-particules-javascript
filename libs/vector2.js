@@ -11,11 +11,14 @@ Vector.add = function (a, b) {
     return new Vector(a.x + b.x, a.y + b.y);
 };
 Vector.scale = function (v, s) {
-    return v.clone().scale(s);
+    return new Vector(v.x, v.y).scale(s);
 };
 Vector.invert = function (v) {
     return new Vector(0 - v.x, 0 - v.y)
 };
+Vector.speed = function (v) {
+    return Math.hypot(v.x, v.y)
+}
 Vector.prototype = {
     set: function (x, y) {
         if (typeof x === 'object') {
